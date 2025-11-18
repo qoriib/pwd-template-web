@@ -24,6 +24,67 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+a:hover {
+  color: inherit;
+}
+
+.navbar .nav-link {
+  color: #495057;
+}
+
+.navbar .nav-link:hover {
+  color: #0d6efd;
+}
+
+body {
+  background: #f7f9fc;
+}
+
+.card {
+  border: none;
+  border-radius: 16px;
+}
+
+.card.shadow-sm {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #0d6efd, #4c82ff);
+  border: none;
+  box-shadow: 0 10px 15px rgba(13, 110, 253, 0.2);
+}
+
+.btn-outline-primary {
+  border-color: #0d6efd;
+  color: #0d6efd;
+}
+
+.hero-overlay {
+  background: linear-gradient(120deg, rgba(13, 110, 253, 0.85), rgba(99, 130, 255, 0.75));
+  color: #fff;
+  border-radius: 16px;
+  padding: 32px;
+}
+
+.pill {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #e7f0ff;
+  color: #0d6efd;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.section-title {
+  color: #1f2937;
+}
+
+.section-subtitle {
+  color: #4b5563;
+}
+
 * {
   box-sizing: border-box;
   padding: 0;

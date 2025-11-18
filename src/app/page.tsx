@@ -30,8 +30,10 @@ type Property = {
   rooms?: { id: number; basePrice: string }[];
 };
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8000/api";
-const getErrMessage = (err: unknown) => (err instanceof Error ? err.message : String(err));
+const API_BASE =
+  process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8000/api";
+const getErrMessage = (err: unknown) =>
+  err instanceof Error ? err.message : String(err);
 
 export default function Home() {
   const [token, setToken] = useState<string>("");
@@ -43,7 +45,12 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [proofFiles, setProofFiles] = useState<Record<number, File | null>>({});
-  const [filter, setFilter] = useState({ city: "", checkIn: "", checkOut: "", duration: "1" });
+  const [filter, setFilter] = useState({
+    city: "",
+    checkIn: "",
+    checkOut: "",
+    duration: "1",
+  });
   const [bookingForm, setBookingForm] = useState({
     propertyId: "",
     roomId: "",
@@ -94,8 +101,10 @@ export default function Home() {
   useEffect(() => {
     fetchDestinations();
     fetchProperties();
-    const storedToken = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-    const storedUserId = typeof window !== "undefined" ? localStorage.getItem("userId") : null;
+    const storedToken =
+      typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    const storedUserId =
+      typeof window !== "undefined" ? localStorage.getItem("userId") : null;
     if (storedToken) setToken(storedToken);
     if (storedUserId) setUserId(Number(storedUserId));
   }, []);
@@ -156,11 +165,14 @@ export default function Home() {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      const res = await fetch(`${API_BASE}/bookings/${bookingId}/payment-proof`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData,
-      });
+      const res = await fetch(
+        `${API_BASE}/bookings/${bookingId}/payment-proof`,
+        {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+          body: formData,
+        }
+      );
       const data = await res.json();
       if (!res.ok) throw new Error(data?.message || "Gagal upload bukti bayar");
       setInfo("Bukti bayar berhasil diupload.");
@@ -184,7 +196,8 @@ export default function Home() {
         headers: authHeaders,
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data?.message || "Gagal membatalkan pesanan");
+      if (!res.ok)
+        throw new Error(data?.message || "Gagal membatalkan pesanan");
       setInfo("Pesanan dibatalkan.");
       await fetchBookings();
     } catch (err: unknown) {
@@ -202,7 +215,7 @@ export default function Home() {
   return (
     <>
       <nav className="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
-        <div className="container">
+        <div className="container g-5">
           <a className="navbar-brand fw-bold" href="#">
             StayHub
           </a>
@@ -241,12 +254,18 @@ export default function Home() {
               </li>
               <li className="nav-item d-flex gap-2">
                 {token ? (
-                  <button className="btn btn-outline-danger btn-sm" onClick={handleLogout}>
+                  <button
+                    className="btn btn-outline-danger btn-sm"
+                    onClick={handleLogout}
+                  >
                     Logout
                   </button>
                 ) : (
                   <>
-                    <a className="btn btn-outline-primary btn-sm" href="/login-user">
+                    <a
+                      className="btn btn-outline-primary btn-sm"
+                      href="/login-user"
+                    >
                       Login
                     </a>
                     <a className="btn btn-primary btn-sm" href="/register-user">
@@ -261,7 +280,7 @@ export default function Home() {
       </nav>
 
       <header id="home" className="bg-light pb-5">
-        <div className="container mt-4">
+        <div className="container g-5 mt-4">
           <div className="row g-4">
             <div className="col-lg-8">
               <div
@@ -274,14 +293,18 @@ export default function Home() {
                 }}
               >
                 <span className="pill mb-2">Cari & bandingkan</span>
-                <h1 className="fw-bold mb-2">Temukan penginapan terbaik dengan harga transparan</h1>
+                <h1 className="fw-bold mb-2">
+                  Temukan penginapan terbaik dengan harga transparan
+                </h1>
                 <p className="mb-3">
-                  Pilih destinasi, atur tanggal, dan lihat ketersediaan kamar dengan harga yang sudah menyesuaikan hari
-                  libur & peak season.
+                  Pilih destinasi, atur tanggal, dan lihat ketersediaan kamar
+                  dengan harga yang sudah menyesuaikan hari libur & peak season.
                 </p>
                 <div className="row g-2">
                   <div className="col-md-4">
-                    <label className="form-label text-white-50">Destinasi</label>
+                    <label className="form-label text-white-50">
+                      Destinasi
+                    </label>
                     <select
                       className="form-select"
                       value={filter.city}
@@ -304,7 +327,9 @@ export default function Home() {
                       type="date"
                       className="form-control"
                       value={filter.checkIn}
-                      onChange={(e) => setFilter({ ...filter, checkIn: e.target.value })}
+                      onChange={(e) =>
+                        setFilter({ ...filter, checkIn: e.target.value })
+                      }
                     />
                   </div>
                   <div className="col-md-2">
@@ -314,16 +339,22 @@ export default function Home() {
                       min="1"
                       className="form-control"
                       value={filter.duration}
-                      onChange={(e) => setFilter({ ...filter, duration: e.target.value })}
+                      onChange={(e) =>
+                        setFilter({ ...filter, duration: e.target.value })
+                      }
                     />
                   </div>
                   <div className="col-md-2">
-                    <label className="form-label text-white-50">Check-out</label>
+                    <label className="form-label text-white-50">
+                      Check-out
+                    </label>
                     <input
                       type="date"
                       className="form-control"
                       value={filter.checkOut}
-                      onChange={(e) => setFilter({ ...filter, checkOut: e.target.value })}
+                      onChange={(e) =>
+                        setFilter({ ...filter, checkOut: e.target.value })
+                      }
                     />
                   </div>
                   <div className="col-md-1 d-flex align-items-end">
@@ -352,13 +383,18 @@ export default function Home() {
                     Masuk
                     <span className="badge bg-primary">User</span>
                   </h6>
-                  <p className="text-muted small mb-3">Masuk untuk melanjutkan reservasi.</p>
+                  <p className="text-muted small mb-3">
+                    Masuk untuk melanjutkan reservasi.
+                  </p>
                   <a className="btn btn-primary w-100" href="/login-user">
                     Login User
                   </a>
                   <hr />
                   <h6 className="card-title">Belum punya akun?</h6>
-                  <a className="btn btn-outline-primary w-100" href="/register-user">
+                  <a
+                    className="btn btn-outline-primary w-100"
+                    href="/register-user"
+                  >
                     Daftar User
                   </a>
                 </div>
@@ -368,9 +404,12 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="container py-5" id="properties">
+      <main className="container g-5 pb-5" id="properties">
         {(error || info) && (
-          <div className={`alert ${error ? "alert-danger" : "alert-success"}`} role="alert">
+          <div
+            className={`alert ${error ? "alert-danger" : "alert-success"}`}
+            role="alert"
+          >
             {error || info}
           </div>
         )}
@@ -379,11 +418,13 @@ export default function Home() {
         <div className="row g-4">
           {filteredProperties.map((p) => (
             <div className="col-md-4" key={p.id}>
-              <div className="card h-100 shadow-sm">
+              <div className="card h-100 shadow-sm overflow-hidden">
                 <div
                   style={{
                     height: 180,
-                    backgroundImage: `url(${p.images?.find((img) => img.isPrimary)?.url || "/placeholder.png"})`,
+                    backgroundImage: `url(${
+                      p.images?.find((img) => img.isPrimary)?.url
+                    })`,
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                   }}
@@ -406,30 +447,41 @@ export default function Home() {
                         setBookingForm((prev) => ({
                           ...prev,
                           propertyId: String(p.id),
-                          roomId: p.rooms && p.rooms.length ? String(p.rooms[0].id) : "",
+                          roomId:
+                            p.rooms && p.rooms.length
+                              ? String(p.rooms[0].id)
+                              : "",
                         }))
                       }
                     >
                       Pilih
                     </button>
-                    <small className="text-muted">Room: {p.rooms?.length || 0}</small>
+                    <small className="text-muted">
+                      Room: {p.rooms?.length || 0}
+                    </small>
                   </div>
                 </div>
               </div>
             </div>
           ))}
-          {filteredProperties.length === 0 && <p className="text-muted">Tidak ada property untuk filter ini.</p>}
+          {filteredProperties.length === 0 && (
+            <p className="text-muted">Tidak ada property untuk filter ini.</p>
+          )}
         </div>
       </main>
 
-      <section className="bg-light py-5" id="transactions">
-        <div className="container">
+      <section className="bg-light" id="transactions">
+        <div className="container g-5">
           <div className="d-flex align-items-center justify-content-between mb-4">
             <div>
               <h3 className="h4 mb-1 section-title">Transaksi Penginapan</h3>
-              <p className="mb-0 section-subtitle">Reservasi, upload bukti bayar, dan riwayat pesanan.</p>
+              <p className="mb-0 section-subtitle">
+                Reservasi, upload bukti bayar, dan riwayat pesanan.
+              </p>
             </div>
-            <div className="text-muted small">{userId ? `User ID: ${userId}` : "Login untuk memulai"}</div>
+            <div className="text-muted small">
+              {userId ? `User ID: ${userId}` : "Login untuk memulai"}
+            </div>
           </div>
           <div className="row g-4">
             <div className="col-lg-4">
@@ -442,7 +494,12 @@ export default function Home() {
                       <input
                         className="form-control"
                         value={bookingForm.propertyId}
-                        onChange={(e) => setBookingForm({ ...bookingForm, propertyId: e.target.value })}
+                        onChange={(e) =>
+                          setBookingForm({
+                            ...bookingForm,
+                            propertyId: e.target.value,
+                          })
+                        }
                         required
                       />
                     </div>
@@ -451,7 +508,12 @@ export default function Home() {
                       <input
                         className="form-control"
                         value={bookingForm.roomId}
-                        onChange={(e) => setBookingForm({ ...bookingForm, roomId: e.target.value })}
+                        onChange={(e) =>
+                          setBookingForm({
+                            ...bookingForm,
+                            roomId: e.target.value,
+                          })
+                        }
                         required
                       />
                     </div>
@@ -461,7 +523,12 @@ export default function Home() {
                         type="date"
                         className="form-control"
                         value={bookingForm.checkIn}
-                        onChange={(e) => setBookingForm({ ...bookingForm, checkIn: e.target.value })}
+                        onChange={(e) =>
+                          setBookingForm({
+                            ...bookingForm,
+                            checkIn: e.target.value,
+                          })
+                        }
                         required
                       />
                     </div>
@@ -471,7 +538,12 @@ export default function Home() {
                         type="date"
                         className="form-control"
                         value={bookingForm.checkOut}
-                        onChange={(e) => setBookingForm({ ...bookingForm, checkOut: e.target.value })}
+                        onChange={(e) =>
+                          setBookingForm({
+                            ...bookingForm,
+                            checkOut: e.target.value,
+                          })
+                        }
                         required
                       />
                     </div>
@@ -482,11 +554,20 @@ export default function Home() {
                         min="1"
                         className="form-control"
                         value={bookingForm.guests}
-                        onChange={(e) => setBookingForm({ ...bookingForm, guests: e.target.value })}
+                        onChange={(e) =>
+                          setBookingForm({
+                            ...bookingForm,
+                            guests: e.target.value,
+                          })
+                        }
                         required
                       />
                     </div>
-                    <button type="submit" className="btn btn-primary w-100" disabled={loading || !token}>
+                    <button
+                      type="submit"
+                      className="btn btn-primary w-100"
+                      disabled={loading || !token}
+                    >
                       {loading ? "Memproses..." : "Buat Pesanan"}
                     </button>
                   </form>
@@ -499,13 +580,19 @@ export default function Home() {
                 <div className="card-body">
                   <div className="d-flex align-items-center justify-content-between mb-3">
                     <h5 className="card-title mb-0">Riwayat Pesanan</h5>
-                    <button className="btn btn-outline-secondary btn-sm" onClick={fetchBookings} disabled={loading}>
+                    <button
+                      className="btn btn-outline-secondary btn-sm"
+                      onClick={fetchBookings}
+                      disabled={loading}
+                    >
                       Refresh
                     </button>
                   </div>
 
                   {loading && <p className="text-muted">Memuat...</p>}
-                  {!loading && bookings.length === 0 && <p className="text-muted">Belum ada pesanan.</p>}
+                  {!loading && bookings.length === 0 && (
+                    <p className="text-muted">Belum ada pesanan.</p>
+                  )}
 
                   {!loading &&
                     bookings.map((b) => (
@@ -517,26 +604,40 @@ export default function Home() {
                             </h6>
                             <div className="text-muted small">
                               {new Date(b.checkIn).toLocaleDateString()} →{" "}
-                              {new Date(b.checkOut).toLocaleDateString()} | {b.guests} tamu
+                              {new Date(b.checkOut).toLocaleDateString()} |{" "}
+                              {b.guests} tamu
                             </div>
                             <div className="text-muted small">
-                              Total: Rp {Number(b.totalAmount).toLocaleString("id-ID")}
+                              Total: Rp{" "}
+                              {Number(b.totalAmount).toLocaleString("id-ID")}
                             </div>
                           </div>
-                          <span className="badge bg-primary align-self-start">{b.status}</span>
+                          <span className="badge bg-primary align-self-start">
+                            {b.status}
+                          </span>
                         </div>
 
-                        <div className="mt-3 d-flex flex-wrap gap-2">
-                          <div className="input-group" style={{ maxWidth: 320 }}>
+                        <div className="mt-3 d-flex flex-wrap align-items-start gap-2">
+                          <div
+                            className="input-group"
+                            style={{ maxWidth: 320 }}
+                          >
                             <input
                               type="file"
                               className="form-control"
                               accept=".jpg,.jpeg,.png"
-                              onChange={(e) => setProofFiles({ ...proofFiles, [b.id]: e.target.files?.[0] || null })}
+                              onChange={(e) =>
+                                setProofFiles({
+                                  ...proofFiles,
+                                  [b.id]: e.target.files?.[0] || null,
+                                })
+                              }
                             />
                             <button
                               className="btn btn-success"
-                              disabled={loading || b.status !== "WAITING_PAYMENT"}
+                              disabled={
+                                loading || b.status !== "WAITING_PAYMENT"
+                              }
                               onClick={() => handleProofUpload(b.id)}
                             >
                               Upload Bukti

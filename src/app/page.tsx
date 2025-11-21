@@ -252,6 +252,11 @@ export default function Home() {
                   Profile
                 </a>
               </li>
+              <li className="nav-item">
+                <a className="nav-link" href="/tenant">
+                  Tenant
+                </a>
+              </li>
               <li className="nav-item d-flex gap-2">
                 {token ? (
                   <button
@@ -262,10 +267,7 @@ export default function Home() {
                   </button>
                 ) : (
                   <>
-                    <a
-                      className="btn btn-outline-primary btn-sm"
-                      href="/login-user"
-                    >
+                    <a className="btn btn-outline-primary btn-sm" href="/login">
                       Login
                     </a>
                     <a className="btn btn-primary btn-sm" href="/register-user">

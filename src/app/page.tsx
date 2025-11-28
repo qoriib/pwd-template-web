@@ -19,6 +19,12 @@ type Booking = {
   guests: number;
   totalAmount: string;
   paymentProof?: { fileUrl: string | null };
+  review?: {
+    id: number;
+    comment: string;
+    rating?: number | null;
+    tenantReply?: string | null;
+  } | null;
 };
 
 type Property = {
@@ -45,6 +51,9 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [proofFiles, setProofFiles] = useState<Record<number, File | null>>({});
+  const [reviewForms, setReviewForms] = useState<
+    Record<number, { comment?: string; rating?: string }>
+  >({});
   const [filter, setFilter] = useState({
     city: "",
     checkIn: "",
@@ -592,38 +601,27 @@ export default function Home() {
                   </div>
 
                   {loading && <p className="text-muted">Memuat...</p>}
-                  {!loading && bookings.length === 0 && (
-                    <p className="text-muted">Belum ada pesanan.</p>
-                  )}
+                  {!loading && bookings.length === 0 && <p className="text-muted">Belum ada pesanan.</p>}
 
                   {!loading &&
                     bookings.map((b) => (
-                      <div key={b.id} className="border rounded p-3 mb-3">
+                      <div key={b.id} className="border rounded p-3 mb-3 bg-white">
                         <div className="d-flex justify-content-between">
                           <div>
                             <h6 className="mb-1">
                               #{b.id} - {b.property?.name} / {b.room?.name}
                             </h6>
                             <div className="text-muted small">
-                              {new Date(b.checkIn).toLocaleDateString()} →{" "}
-                              {new Date(b.checkOut).toLocaleDateString()} |{" "}
+                              {new Date(b.checkIn).toLocaleDateString()} → {new Date(b.checkOut).toLocaleDateString()} |{" "}
                               {b.guests} tamu
                             </div>
-                            <div className="text-muted small">
-                              Total: Rp{" "}
-                              {Number(b.totalAmount).toLocaleString("id-ID")}
-                            </div>
+                            <div className="text-muted small">Total: Rp {Number(b.totalAmount).toLocaleString("id-ID")}</div>
                           </div>
-                          <span className="badge bg-primary align-self-start">
-                            {b.status}
-                          </span>
+                          <span className="badge bg-primary align-self-start">{b.status}</span>
                         </div>
 
                         <div className="mt-3 d-flex flex-wrap align-items-start gap-2">
-                          <div
-                            className="input-group"
-                            style={{ maxWidth: 320 }}
-                          >
+                          <div className="input-group" style={{ maxWidth: 320 }}>
                             <input
                               type="file"
                               className="form-control"
@@ -637,9 +635,7 @@ export default function Home() {
                             />
                             <button
                               className="btn btn-success"
-                              disabled={
-                                loading || b.status !== "WAITING_PAYMENT"
-                              }
+                              disabled={loading || b.status !== "WAITING_PAYMENT"}
                               onClick={() => handleProofUpload(b.id)}
                             >
                               Upload Bukti
@@ -659,7 +655,88 @@ export default function Home() {
                               Bukti: {b.paymentProof.fileUrl?.split("/").pop()}
                             </span>
                           )}
+                          {b.review && (
+                            <span className="badge bg-info text-wrap">
+                              Review: {b.review.comment} {b.review.rating ? `(Rating ${b.review.rating})` : ""}
+                            </span>
+                          )}
                         </div>
+                        {b.review?.tenantReply && (
+                          <div className="mt-2 text-muted small">Balasan tenant: {b.review.tenantReply}</div>
+                        )}
+
+                        {!b.review && b.status === "COMPLETED" && (
+                          <div className="mt-3 border-top pt-3">
+                            <h6 className="mb-2">Berikan Review</h6>
+                            <form
+                              className="d-flex flex-column gap-2"
+                              onSubmit={async (e) => {
+                                e.preventDefault();
+                                setLoading(true);
+                                setError(null);
+                                setInfo(null);
+                                try {
+                                  const res = await fetch(`${API_BASE}/reviews`, {
+                                    method: "POST",
+                                    headers: authHeaders,
+                                    body: JSON.stringify({
+                                      bookingId: b.id,
+                                      comment: reviewForms[b.id]?.comment || "",
+                                      rating: reviewForms[b.id]?.rating ? Number(reviewForms[b.id]?.rating) : undefined,
+                                    }),
+                                  });
+                                  const data = await res.json();
+                                  if (!res.ok) throw new Error(data?.message || "Gagal mengirim review");
+                                  setInfo("Review terkirim.");
+                                  setReviewForms((prev) => ({ ...prev, [b.id]: { comment: "", rating: "" } }));
+                                  fetchBookings();
+                                } catch (err: unknown) {
+                                  setError(getErrMessage(err));
+                                } finally {
+                                  setLoading(false);
+                                }
+                              }}
+                            >
+                              <textarea
+                                className="form-control"
+                                rows={2}
+                                placeholder="Tulis komentar"
+                                value={reviewForms[b.id]?.comment || ""}
+                                onChange={(e) =>
+                                  setReviewForms((prev) => ({
+                                    ...prev,
+                                    [b.id]: { ...(prev[b.id] || {}), comment: e.target.value },
+                                  }))
+                                }
+                                required
+                              />
+                              <div className="d-flex align-items-center gap-2">
+                                <label className="form-label mb-0">Rating</label>
+                                <select
+                                  className="form-select"
+                                  style={{ width: 100 }}
+                                  value={reviewForms[b.id]?.rating || ""}
+                                  onChange={(e) =>
+                                    setReviewForms((prev) => ({
+                                      ...prev,
+                                      [b.id]: { ...(prev[b.id] || {}), rating: e.target.value },
+                                    }))
+                                  }
+                                >
+                                  <option value="">-</option>
+                                  {[1, 2, 3, 4, 5].map((r) => (
+                                    <option key={r} value={r}>
+                                      {r}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                              <button className="btn btn-outline-primary btn-sm align-self-start" disabled={loading}>
+                                Kirim Review
+                              </button>
+                            </form>
+                          </div>
+                        )}
                       </div>
                     ))}
                 </div>
